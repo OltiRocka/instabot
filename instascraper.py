@@ -108,7 +108,7 @@ class InstaScraperAPI:
             lambda url: "video" if ".mp4" in url else "image"
         )
 
-        return self.post_df, content_category
+        return self.post_df
 
     def send_request(self, url):
         """
@@ -188,8 +188,8 @@ class InstaScraperAPI:
             "caption": caption,
             "access_token": self.access_token,
         }
-        url = f"https://graph.facebook.com/v17.0/{str(account)}/media"
-        url_publish = f"https://graph.facebook.com/v17.0/{str(account)}/media_publish"
+        url = f"https://graph.facebook.com/v17.0/{str(self.accounts['accounts'][account]['number'])}/media"
+        url_publish = f"https://graph.facebook.com/v17.0/{str(self.accounts['accounts'][account]['number'])}/media_publish"
         response = self.send_post_request(url, payload)
 
         if response.status_code == 200:
@@ -203,10 +203,11 @@ class InstaScraperAPI:
             return (
                 "Success"
                 if response_publish.status_code == 200
-                else "Problem while Publishing"
+                else f"Problem while Publishing: {response.text}"
             )
         else:
-            return "Problem while Saving"
+            
+            return f"Problem while Saving : {response.text}"
 
     def send_post_request(self, url, payload):
         """
