@@ -60,7 +60,7 @@ class InstaScraperAPI:
             content category
         """
         # Retrieve the specified subreddit
-        subreddit = reddit.subreddit(content_category)
+        subreddit = self.reddit.subreddit(content_category)
         # Retrieve the top posts from the subreddit
         top_posts = subreddit.top(limit=100)
         # Select a random post from the top posts
