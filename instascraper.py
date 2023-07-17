@@ -2,10 +2,7 @@ import json
 import pandas as pd
 import requests
 import random
-from bs4 import BeautifulSoup
 import json
-import time
-import instaloader
 
 class InstaScraperAPI:
     """
@@ -33,9 +30,13 @@ class InstaScraperAPI:
         Constructs all the necessary attributes for the DataScraper object.
         """
         self.post_df = pd.DataFrame()
-        self.base_url = "https://instagram.com/"
         self.load_accounts()
         self.access_token = self.accounts["ACCESS_TOKEN"]
+        self.reddit = praw.Reddit(
+    client_id='A3Y57PNmwv6t1xp4-taihQ',
+    client_secret='GFOJDT1N_qcV30ADaywdWMUiqFq_KQ',
+    user_agent='Rocka-DEV'
+)
     def load_accounts(self):
         with open(".json", "r") as file:
             self.accounts = json.load(file)
@@ -57,27 +58,25 @@ class InstaScraperAPI:
         str
             content category
         """
-        usernames = self.accounts["content_types"][content_category]
-        import instaloader
-        loader = instaloader.Instaloader()
-        
-        for username in usernames:
-            # Send request to search for the username
-            profile = instaloader.Profile.from_username(loader.context, username)
-            posts = list(profile.get_posts())[:10]
-            for post in posts:
-                if post.is_video:
-                    url = [post.video_url]
-                    description = (
-                        str(post.caption).split('\n')[0]
+        # Retrieve the specified subreddit
+        subreddit = reddit.subreddit(content_category)
+        # Retrieve the top posts from the subreddit
+        top_posts = subreddit.top(limit=100)
+        # Select a random post from the top posts
+        posts = list(top_posts)
+        for post in posts:
+            if post.is_video:
+                url = [post.media['reddit_video']['fallback_url']]
+                description = (
+                        str(post.title)
                         + "\n.\n.\n.\n"
                         + self.accounts["hashtags"][content_category]
                     )
-                    media_type = "reel"
+                media_type = "reel"
                 else:
                     url = [post.url]
                     description = (
-                        str(post.caption).split('\n')[0]
+                        str(post.title)
                         + "\n.\n.\n.\n"
                         + self.accounts["hashtags"][content_category]
                     )
@@ -88,7 +87,6 @@ class InstaScraperAPI:
                         self.post_df,
                         pd.DataFrame(
                             {
-                                "username": [username],
                                 "url": [url],
                                 "description": [description],
                                 "media_type": [media_type],
@@ -146,32 +144,7 @@ class InstaScraperAPI:
                 "access_token": self.access_token,
                 "media_type": "REELS",
             }
-        elif media_type == "carousel":
-            item_container_ids = []
-            for media_url in url:
-                create_item_container_url = (
-                    f"https://graph.facebook.com/v17.0/{str(account)}/media"
-                )
-                create_item_container_params = {
-                    "access_token": self.access_token,
-                    "image_url": media_url,
-                    "is_carousel_item": "true",
-                }
-                create_item_container_response = requests.post(
-                    create_item_container_url, params=create_item_container_params
-                )
-                create_item_container_data = create_item_container_response.json()
-                item_container_id = create_item_container_data.get("id")
-
-                item_container_ids.append(item_container_id)
-
-            payload = {
-                "children": ",".join(item_container_ids),
-                "caption": caption,
-                "access_token": self.access_token,
-                "media_type": "CAROUSEL",
-            }
-
+    
         url = f"https://graph.facebook.com/v17.0/{str(account)}/media"
         url_publish = f"https://graph.facebook.com/v17.0/{str(account)}/media_publish"
         response = self.send_post_request(url, payload)
