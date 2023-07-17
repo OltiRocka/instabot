@@ -59,7 +59,7 @@ class InstaScraperAPI:
         usernames = self.accounts["content_types"][content_category]
         for username in usernames:
             # Send request to search for the username
-            response = requests.get(f"{self.base_url}{username}", headers = headers)
+            response = requests.get(f"{self.base_url}{username}")
             print(f"{self.base_url}{username}")
             soup = BeautifulSoup(str(response.text), "html.parser")
             try:
