@@ -66,7 +66,7 @@ class InstaScraperAPI:
                 data = json.loads(soup.find_all("script")[0].text)
             except Exception as e:
                 time.sleep(60)
-                response = requests.get(f"{self.base_url}{username}", headers = headers)
+                response = requests.get(f"{self.base_url}{username}")
                 print(f"{self.base_url}{username}")
                 soup = BeautifulSoup(str(response.text), "html.parser")
                 data = json.loads(soup.find_all("script")[0].text)
