@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import json
 import time
 
-
 class InstaScraperAPI:
     """
     A class used to scrape data from Instagram profiles and post it on given Instagram Accounts.
@@ -37,7 +36,6 @@ class InstaScraperAPI:
         self.headers = self.get_headers()
         self.load_accounts()
         self.access_token = self.accounts["ACCESS_TOKEN"]
-
     def load_accounts(self):
         with open(".json", "r") as file:
             self.accounts = json.load(file)
@@ -73,13 +71,17 @@ class InstaScraperAPI:
         str
             content category
         """
+        
         usernames = self.accounts["content_types"][content_category]
         for username in usernames:
             # Send request to search for the username
-            response = self.send_request(f"{self.base_url}{username}")
-            soup = BeautifulSoup(response.text, "html.parser")
+            session = requests.Session()
+            response = session.get(f"{self.base_url}{username}")
+            print(f"{self.base_url}{username}")
+            soup = BeautifulSoup(str(response.text), "html.parser")
             data = json.loads(soup.find_all("script")[0].text)
 
+            
             for post in data[1]["itemListElement"]:
                 if len(post["video"]) >= 1:
                     url = [post["video"][0]["contentUrl"]]
@@ -114,6 +116,7 @@ class InstaScraperAPI:
                                 "url": [url],
                                 "description": [description],
                                 "media_type": [media_type],
+                                'niche':[content_category]
                             }
                         ),
                     ]
@@ -134,7 +137,7 @@ class InstaScraperAPI:
         requests.Response
             Response object
         """
-        return requests.get(url, timeout=30)
+        return requests.get(url, timeout=30, headers = self.headers)
 
     def publish_media(self, url, caption, account, media_type):
         """
@@ -239,15 +242,19 @@ def main(event, context):
     scraper = InstaScraperAPI()
     for niche in list(scraper.accounts["accounts"].keys()):
         df = scraper.scrape_data(niche)
-        df.reset_index(inplace=True)
-        random_index = random.choice(df.index)
+        time.sleep(10)
+        
+    df.reset_index(inplace=True)
+    for niche in list(scraper.accounts["accounts"].keys()):
+        df_content = df.loc[df['niche']==niche]
+        df_content.reset_index(inplace=True)
         for account in list(scraper.accounts["accounts"][niche]):
-            random_index = random.choice(df.index)
+            random_index = random.choice(df_content.index)
             response = scraper.publish_media(
-                url=df["url"].iloc[random_index],
-                caption=df["description"].iloc[random_index],
+                url=df_content["url"].iloc[random_index],
+                caption=df_content["description"].iloc[random_index],
                 account=account,
-                media_type=df["media_type"].iloc[random_index],
+                media_type=df_content["media_type"].iloc[random_index],
             )
             print(response)
-        scraper.reset_df()
+main(1,2)
