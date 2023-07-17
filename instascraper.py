@@ -73,16 +73,16 @@ class InstaScraperAPI:
                         + self.accounts["hashtags"][content_category]
                     )
                 media_type = "reel"
-                else:
-                    url = [post.url]
-                    description = (
+            else:
+                url = [post.url]
+                description = (
                         str(post.title)
                         + "\n.\n.\n.\n"
                         + self.accounts["hashtags"][content_category]
                     )
-                    media_type = "image"
+                media_type = "image"
                
-                self.post_df = pd.concat(
+            self.post_df = pd.concat(
                     [
                         self.post_df,
                         pd.DataFrame(
