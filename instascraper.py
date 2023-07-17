@@ -61,7 +61,7 @@ class InstaScraperAPI:
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0",
     "Accept": "*/*",
     "Accept-Language": "en-US,en;q=0.5",
-    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Encoding": "utf-8",
     "X-CSRFToken": "PqnjxscfstkbqJqsHYm4SKh2IOJRFk4A",
     "X-IG-App-ID": "936619743392459",
     "X-ASBD-ID": "129477",
