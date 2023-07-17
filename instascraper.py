@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import random
 import json
+import praw
 
 class InstaScraperAPI:
     """
