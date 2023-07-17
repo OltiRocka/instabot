@@ -2,7 +2,7 @@ name: run instascraper.py
 run-name: ${{ github.actor }} is posting 🚀
 on: 
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '30 */4 * * *'
 jobs:
   build:
     runs-on: ubuntu-latest
