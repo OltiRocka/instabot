@@ -1,39 +1,151 @@
 {
-  "ACCESS_TOKEN": "<your_access_token>",
+  "ACCESS_TOKEN": "EAAId3HXFDJ4BALm86NcxVzZB2wIHZCdm3PVZBD6MZCPP4hgMjtK3RM8hn1DMUZAM0OvQgSSZAIO7Ecs7lR4PGFVaYR3xqqQ2H184IbHmG1U6xVw02zRtyNfO5CzXcc9dx693SZA3wfExsv0wWgIG9jlxH2v0hMTAM6jG9zO2DvpwWbEKZAnZAivpD",
   "hashtags": {
-    "niche_1": "<string_of_hashtags_for_niche_1>",
-    "niche_2": "<string_of_hashtags_for_niche_2>"
+    "cats": " #cats #catsofinstagram #cat #of #catstagram #instagram #catlover #catlife #catlovers #instacat #kitten #pets #meow #kittens #catoftheday #kitty #love #cute #pet #animals #dogs #gatos ",
+    "nature": " #nature #photography #naturephotography #love #travel #photooftheday #instagood #beautiful #picoftheday #photo #instagram #naturelovers #art #landscape #like #follow #travelphotography"
+  },
+  "future_accounts": {
+    "travel": [
+      "explore_ourplanet",
+      "destination_addict"
+    ],
+    "food": [
+      "mouthwatering_delights",
+      "foodie_adventurer",
+      "gourmet_discoveries"
+    ],
+    "fitness": [
+      "sweat_with_smile",
+      "fitspiration_hub",
+      "fitness_mindset_warrior"
+    ],
+    "fashion": [
+      "fashionista_moments",
+      "style_icon_diaries",
+      "trendy_style_crush",
+      "glam_fashionista_vibes",
+      "chic_style_inspiration"
+    ],
+    "nature": [
+      "outdoor_obsession",
+      "flora_fauna_tales",
+      "scenic_wonders_explore",
+      "serene_nature_delights"
+    ],
+    "interior_design": [
+      "home_decor_crush",
+      "home_decor_inspire",
+      "interior_style_hub",
+      "interior_magic_touch"
+    ],
+    "inspiration": [
+      "dream_chaser",
+      "growth_mindset",
+      "motivation_manifested",
+      "empowered_mindset_journey"
+    ],
+    "cats": [
+      "catnip_craze",
+      "purr_paws_repeat",
+      "fluffy_feline_friends"
+    ]
   },
   "accounts": {
-    "niche_1": [
-      "instagram_account_id_1",
-      "instagram_account_id_2",
-      "instagram_account_id_3",
-      "instagram_account_id_4"
+    
+    "cats": [
+      "17841452334230017"
     ],
-    "niche_2": [
-      "instagram_account_id_1",
-      "instagram_account_id_2",
-      "instagram_account_id_3",
-      "instagram_account_id_4"
+    "nature": [
+      "17841459563673281"
     ]
   },
   "content_types": {
-    "niche_1": [
-      "existing_acc_1",
-      "existing_acc_2",
-      "existing_acc_3",
-      "existing_acc_4",
-      "existing_acc_5",
-      "existing_acc_6"
+    "cats": [
+      "catsofweek",
+      "mydreamycats",
+      "worldrecordscats",
+      "cats.kuties",
+      "catifystores",
+      "itscatsland",
+      "cutecatsfanatic",
+      "cats.virals",
+      "petlover12122",
+      "catloversclub",
+      "cocospalace.co",
+      "rartcattos",
+      "magistic_kitte",
+      "ddo_o_da",
+      "catsofinstagram",
+      "cats_of_instagram",
+      "meowed",
+      "catloversclub",
+      "excellent_cats",
+      "cat_delight"
     ],
-    "niche_2": [
-      "existing_acc_1",
-      "existing_acc_2",
-      "existing_acc_3",
-      "existing_acc_4",
-      "existing_acc_5",
-      "existing_acc_6"
+    "travel": [
+      "travelawesome",
+      "travelandleisure",
+      "earthpix",
+      "welivetoexplore",
+      "bestvacations",
+      "beautifuldestinations",
+      "passionpassport",
+      "theglobewanderer",
+      "discoverearth"
+    ],
+    "food": [
+      "buzzfeedfood",
+      "tastemade",
+      "foodyeating",
+      "foodnetwork",
+      "food52",
+      "foodyfetish",
+      "foodgawker",
+      "foodiecrush",
+      "foodie_incarnate"
+    ],
+    "fitness": [
+      "gymbeaston",
+      "fithealthyworkouts",
+      "fitgirlsguide",
+      "fitness",
+      "fitgurlmel",
+      "fitness.maniiaa",
+      "gymfit.tips",
+      "gainmusclelegacy"
+    ],
+    "fashion": [
+      "fashionartdiy",
+      "daily_remedie.s",
+      "instabeautycare_",
+      "girlsmantra_",
+      "beautyepics",
+      "fabbeautytips",
+      "_beauty__hackss"
+    ],
+    "nature": [
+      "natureonly",
+      "natureworld_photography",
+      "amazing.pictures",
+      "loveincredibledestinations",
+      "travelwonderfulplace",
+      "atravelfeed",
+      "earthtwister"
+    ],
+    "interior_design": [
+      "interior4all",
+      "interior_design",
+      "interior_magasinet",
+      "white.interior1"
+    ],
+    "inspiration": [
+      "positiveenergy_plus",
+      "thegoodquote",
+      "motivation_mondays",
+      "perfectsayings",
+      "mindset.therapy",
+      "advice",
+      "liveyourimpossible"
     ]
   }
 }
