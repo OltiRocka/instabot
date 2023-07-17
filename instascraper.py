@@ -251,6 +251,3 @@ def main(event, context):
             )
             print(response)
         scraper.reset_df()
-
-
-main(1, 2)
