@@ -1,8 +1,10 @@
-import os
 import json
 import pandas as pd
 import requests
-from dotenv import load_dotenv, find_dotenv
+import random
+from bs4 import BeautifulSoup
+import json
+import time
 
 
 class InstaScraperAPI:
@@ -31,12 +33,10 @@ class InstaScraperAPI:
         Constructs all the necessary attributes for the DataScraper object.
         """
         self.post_df = pd.DataFrame()
-        self.base_url = "https://instastories.watch/api/profile/v3"
-        dotenv_path = find_dotenv()
-        load_dotenv(dotenv_path)
-        self.access_token = os.getenv("ACCESS_TOKEN")
+        self.base_url = "https://instagram.com/"
         self.headers = self.get_headers()
         self.load_accounts()
+        self.access_token = self.accounts["ACCESS_TOKEN"]
 
     def load_accounts(self):
         with open(".json", "r") as file:
@@ -54,16 +54,6 @@ class InstaScraperAPI:
         """
         return {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-US,en;q=0.5",
-            "Connection": "keep-alive",
-            "Host": "instastories.watch",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "TE": "trailers",
-            "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0",
         }
 
@@ -86,28 +76,48 @@ class InstaScraperAPI:
         usernames = self.accounts["content_types"][content_category]
         for username in usernames:
             # Send request to search for the username
-            response = self.send_request(f"{self.base_url}/search?username={username}")
-            user_info = self.send_request(f"{self.base_url}/info?username={username}")
-            posts_info = self.send_request(
-                f"{self.base_url}/publications?nextMaxId=&username={username}"
-            )
+            response = self.send_request(f"{self.base_url}{username}")
+            soup = BeautifulSoup(response.text, "html.parser")
+            data = json.loads(soup.find_all("script")[0].text)
 
-            items = json.loads(posts_info.text)["items"]
-            posts = [i for i in items if "medias" in i.keys()]
-
-            data = self.extract_data(
-                posts, username, json.loads(user_info.text)["subscriber"]
-            )
-
-            # Concatenate the data to the post_df DataFrame
-            self.post_df = pd.concat([self.post_df, pd.DataFrame(data)]).reset_index(
-                drop=True
-            )
-
-        self.post_df["media_type"] = self.post_df["post_urls"].apply(
-            lambda url: "video" if ".mp4" in url else "image"
-        )
-
+            for post in data[1]["itemListElement"]:
+                if len(post["video"]) >= 1:
+                    url = [post["video"][0]["contentUrl"]]
+                    description = (
+                        post["articleBody"]
+                        + "\n.\n.\n.\n"
+                        + self.accounts["hashtags"][content_category]
+                    )
+                    media_type = "reel"
+                elif len(post["image"]) == 1:
+                    url = [post["image"][0]["url"]]
+                    description = (
+                        post["articleBody"]
+                        + "\n.\n.\n.\n"
+                        + self.accounts["hashtags"][content_category]
+                    )
+                    media_type = "image"
+                else:
+                    url = [image["url"] for image in post["image"]]
+                    description = (
+                        post["articleBody"].split("\n")[0]
+                        + "\n.\n.\n.\n"
+                        + self.accounts["hashtags"][content_category]
+                    )
+                    media_type = "carousel"
+                self.post_df = pd.concat(
+                    [
+                        self.post_df,
+                        pd.DataFrame(
+                            {
+                                "username": [username],
+                                "url": [url],
+                                "description": [description],
+                                "media_type": [media_type],
+                            }
+                        ),
+                    ]
+                )
         return self.post_df
 
     def send_request(self, url):
@@ -124,47 +134,9 @@ class InstaScraperAPI:
         requests.Response
             Response object
         """
-        return requests.get(url, headers=self.headers)
+        return requests.get(url, timeout=30)
 
-    @staticmethod
-    def extract_data(posts, username, subscriber):
-        """
-        Extracts relevant data from the posts.
-
-        Parameters
-        ----------
-        posts : list
-            list of posts
-        username : str
-            Instagram username
-        subscriber : int
-            number of subscribers
-
-        Returns
-        -------
-        dict
-            a dictionary with the extracted data
-        """
-        post_urls = [post["medias"][0]["originalUrl"] for post in posts]
-        likes = [int(post["likes"]) for post in posts]
-        descriptions = [
-            "\n".join(
-                [row for row in post.get("text", "").split("\n") if "@" not in row]
-            )
-            for post in posts
-        ]
-
-        data = {
-            "username": [username] * len(post_urls),
-            "followers": [subscriber] * len(post_urls),
-            "post_urls": post_urls,
-            "likes": likes,
-            "description": descriptions,
-        }
-
-        return data
-
-    def publish_media(self, url, caption, account):
+    def publish_media(self, url, caption, account, media_type):
         """
         Publishes the scraped media on the Facebook account.
 
@@ -182,36 +154,68 @@ class InstaScraperAPI:
         str
             success message or error message
         """
+        if media_type == "image":
+            payload = {
+                "image_url": url[0],
+                "caption": caption,
+                "access_token": self.access_token,
+            }
+        elif media_type == "reel":
+            payload = {
+                "video_url": url[0],
+                "caption": caption,
+                "access_token": self.access_token,
+                "media_type": "REELS",
+            }
+        elif media_type == "carousel":
+            item_container_ids = []
+            for media_url in url:
+                create_item_container_url = (
+                    f"https://graph.facebook.com/v17.0/{str(account)}/media"
+                )
+                create_item_container_params = {
+                    "access_token": self.access_token,
+                    "image_url": media_url,
+                    "is_carousel_item": "true",
+                }
+                create_item_container_response = requests.post(
+                    create_item_container_url, params=create_item_container_params
+                )
+                create_item_container_data = create_item_container_response.json()
+                item_container_id = create_item_container_data.get("id")
 
-        payload = {
-            "image_url": url,
-            "caption": caption,
-            "access_token": self.access_token,
-        }
-        url = f"https://graph.facebook.com/v17.0/{str(self.accounts['accounts'][account]['number'])}/media"
-        url_publish = f"https://graph.facebook.com/v17.0/{str(self.accounts['accounts'][account]['number'])}/media_publish"
+                item_container_ids.append(item_container_id)
+
+            payload = {
+                "children": ",".join(item_container_ids),
+                "caption": caption,
+                "access_token": self.access_token,
+                "media_type": "CAROUSEL",
+            }
+
+        url = f"https://graph.facebook.com/v17.0/{str(account)}/media"
+        url_publish = f"https://graph.facebook.com/v17.0/{str(account)}/media_publish"
         response = self.send_post_request(url, payload)
-
         if response.status_code == 200:
             creation_id = json.loads(response.text)["id"]
             payload_publish = {
                 "access_token": self.access_token,
                 "creation_id": creation_id,
             }
+            if media_type == "reel":
+                time.sleep(20)
             response_publish = self.send_post_request(url_publish, payload_publish)
-
             return (
                 "Success"
                 if response_publish.status_code == 200
                 else f"Problem while Publishing: {response.text}"
             )
         else:
-            
             return f"Problem while Saving : {response.text}"
 
     def send_post_request(self, url, payload):
         """
-        Sends a POST request to the specified URL.
+        Sends a POST re quest to the specified URL.
 
         Parameters
         ----------
@@ -226,3 +230,27 @@ class InstaScraperAPI:
             Response object
         """
         return requests.post(url=url, data=payload)
+
+    def reset_df(self):
+        self.post_df = pd.DataFrame()
+
+
+def main(event, context):
+    scraper = InstaScraperAPI()
+    for niche in list(scraper.accounts["accounts"].keys()):
+        df = scraper.scrape_data(niche)
+        df.reset_index(inplace=True)
+        random_index = random.choice(df.index)
+        for account in list(scraper.accounts["accounts"][niche]):
+            random_index = random.choice(df.index)
+            response = scraper.publish_media(
+                url=df["url"].iloc[random_index],
+                caption=df["description"].iloc[random_index],
+                account=account,
+                media_type=df["media_type"].iloc[random_index],
+            )
+            print(response)
+        scraper.reset_df()
+
+
+main(1, 2)

@@ -1,0 +1,39 @@
+{
+  "ACCESS_TOKEN": "<your_access_token>",
+  "hashtags": {
+    "niche_1": "<string_of_hashtags_for_niche_1>",
+    "niche_2": "<string_of_hashtags_for_niche_2>"
+  },
+  "accounts": {
+    "niche_1": [
+      "instagram_account_id_1",
+      "instagram_account_id_2",
+      "instagram_account_id_3",
+      "instagram_account_id_4"
+    ],
+    "niche_2": [
+      "instagram_account_id_1",
+      "instagram_account_id_2",
+      "instagram_account_id_3",
+      "instagram_account_id_4"
+    ]
+  },
+  "content_types": {
+    "niche_1": [
+      "existing_acc_1",
+      "existing_acc_2",
+      "existing_acc_3",
+      "existing_acc_4",
+      "existing_acc_5",
+      "existing_acc_6"
+    ],
+    "niche_2": [
+      "existing_acc_1",
+      "existing_acc_2",
+      "existing_acc_3",
+      "existing_acc_4",
+      "existing_acc_5",
+      "existing_acc_6"
+    ]
+  }
+}
