@@ -1,8 +1,12 @@
 name: run instascraper.py
 run-name: ${{ github.actor }} is posting 🚀
-on: 
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
   schedule:
-    - cron: '30 */4 * * *'
+    - cron: '0 */4 * * *' # Every 4 hours
 jobs:
   build:
     runs-on: ubuntu-latest
