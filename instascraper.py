@@ -33,27 +33,12 @@ class InstaScraperAPI:
         """
         self.post_df = pd.DataFrame()
         self.base_url = "https://instagram.com/"
-        self.headers = self.get_headers()
         self.load_accounts()
         self.access_token = self.accounts["ACCESS_TOKEN"]
     def load_accounts(self):
         with open(".json", "r") as file:
             self.accounts = json.load(file)
 
-    @staticmethod
-    def get_headers():
-        """
-        Returns the headers for HTTP requests.
-
-        Returns
-        -------
-        dict
-            headers for HTTP requests
-        """
-        return {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0",
-        }
 
     def scrape_data(self, content_category):
         """
@@ -71,12 +56,30 @@ class InstaScraperAPI:
         str
             content category
         """
-        
+        headers = {
+    "Host": "www.instagram.com",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/114.0",
+    "Accept": "*/*",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "X-CSRFToken": "PqnjxscfstkbqJqsHYm4SKh2IOJRFk4A",
+    "X-IG-App-ID": "936619743392459",
+    "X-ASBD-ID": "129477",
+    "X-IG-WWW-Claim": "hmac.AR36pw8gkrJL1t4a4yCx7va4l8BRr8VegR7PPI6Omn9kgZt9",
+    "X-Requested-With": "XMLHttpRequest",
+    "Connection": "keep-alive",
+    "Referer": "https://www.instagram.com/cats.virals/",
+    "Cookie": "ig_did=129496B2-ABDB-4A34-BAEB-3041BF863C59; datr=Nk-DZG7I1Kk73kw02xF-g-mL; mid=ZINPNwAEAAGQ_vVhNDlhSu0SEDXP; ig_nrcb=1; shbid='5477\05459706249455\0541721119822:01f7e0a9e67c945ca92aaba598106390614a42754346588d103365796985c81ef5cf4ba8'; shbts='1689583822\05459706249455\0541721119822:01f7a265f3a61585f8a5562013ea108410a59bea3cb808697d041cbc49b90f35bd7e8464'; csrftoken=PqnjxscfstkbqJqsHYm4SKh2IOJRFk4A; ds_user_id=59706249455; sessionid=59706249455%3AjEQIZq2QRL3VtT%3A11%3AAYcJt6vF64OJIcg8pF0UUqzIcsrKujpOP9kBbvpJhQ; rur='RVA\05459706249455\0541721138543:01f7e5bbe632e90fa25b826f9157d76a79ab7e902252863cd04eb3f7831cd3cc3d9a65f5'",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+    "TE": "trailers",
+}
         usernames = self.accounts["content_types"][content_category]
         for username in usernames:
             # Send request to search for the username
             session = requests.Session()
-            response = session.get(f"{self.base_url}{username}")
+            response = session.get(f"{self.base_url}{username}", headers = headers)
             print(f"{self.base_url}{username}")
             soup = BeautifulSoup(str(response.text), "html.parser")
             try:
