@@ -5,6 +5,7 @@ import random
 from bs4 import BeautifulSoup
 import json
 import time
+import instaloader
 
 class InstaScraperAPI:
     """
@@ -57,45 +58,31 @@ class InstaScraperAPI:
             content category
         """
         usernames = self.accounts["content_types"][content_category]
+        import instaloader
+        loader = instaloader.Instaloader()
+        
         for username in usernames:
             # Send request to search for the username
-            response = requests.get(f"{self.base_url}{username}")
-            print(f"{self.base_url}{username}")
-            soup = BeautifulSoup(str(response.text), "html.parser")
-            try:
-                data = json.loads(soup.find_all("script")[0].text)
-            except Exception as e:
-                time.sleep(60)
-                response = requests.get(f"{self.base_url}{username}")
-                print(f"{self.base_url}{username}")
-                soup = BeautifulSoup(str(response.text), "html.parser")
-                data = json.loads(soup.find_all("script")[0].text)
-            
-            for post in data[1]["itemListElement"]:
-                if len(post["video"]) >= 1:
-                    url = [post["video"][0]["contentUrl"]]
+            profile = instaloader.Profile.from_username(loader.context, username)
+            posts = list(profile.get_posts())[:10]
+            for post in posts:
+                if post.is_video:
+                    url = [post.video_url]
                     description = (
-                        post["articleBody"]
+                        str(post.caption).split('\n')[0]
                         + "\n.\n.\n.\n"
                         + self.accounts["hashtags"][content_category]
                     )
                     media_type = "reel"
-                elif len(post["image"]) == 1:
-                    url = [post["image"][0]["url"]]
+                else:
+                    url = [post.url]
                     description = (
-                        post["articleBody"]
+                        str(post.caption).split('\n')[0]
                         + "\n.\n.\n.\n"
                         + self.accounts["hashtags"][content_category]
                     )
                     media_type = "image"
-                else:
-                    url = [image["url"] for image in post["image"]]
-                    description = (
-                        post["articleBody"].split("\n")[0]
-                        + "\n.\n.\n.\n"
-                        + self.accounts["hashtags"][content_category]
-                    )
-                    media_type = "carousel"
+               
                 self.post_df = pd.concat(
                     [
                         self.post_df,
