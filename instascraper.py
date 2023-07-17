@@ -79,8 +79,11 @@ class InstaScraperAPI:
             response = session.get(f"{self.base_url}{username}")
             print(f"{self.base_url}{username}")
             soup = BeautifulSoup(str(response.text), "html.parser")
-            data = json.loads(soup.find_all("script")[0].text)
-
+            try:
+                data = json.loads(soup.find_all("script")[0].text)
+            except Exception as e:
+                print(e)
+                print(soup)
             
             for post in data[1]["itemListElement"]:
                 if len(post["video"]) >= 1:
