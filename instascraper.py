@@ -2,7 +2,6 @@ import json
 import pandas as pd
 import requests
 import random
-import json
 import praw
 import time
 
