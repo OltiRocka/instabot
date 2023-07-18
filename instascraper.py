@@ -63,7 +63,7 @@ class InstaScraperAPI:
         # Retrieve the specified subreddit
         subreddit = self.reddit.subreddit(content_category)
         # Retrieve the top posts from the subreddit
-        top_posts = subreddit.top(limit=100)
+        top_posts = subreddit.hot(limit=30)
         # Select a random post from the top posts
         posts = list(top_posts)
         for post in posts:
@@ -208,4 +208,3 @@ def main(event, context):
                 media_type=df_content["media_type"].iloc[random_index],
             )
             print(response)
-main(1,2)
