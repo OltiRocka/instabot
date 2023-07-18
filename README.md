@@ -1,4 +1,4 @@
-# InstaScraperAPI
+# Instagram Bot
 
 InstaScraperAPI is a Python library that allows you to scrape data from Instagram profiles and publish it on given Instagram accounts. It provides a convenient way to gather Instagram posts from specific subreddits using the Reddit API (PRAW) and publish them on Instagram accounts associated with those subreddits. This README will guide you on how to install and use the library effectively.
 ## Installation
