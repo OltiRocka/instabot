@@ -35,9 +35,9 @@ class InstaScraperAPI:
         self.load_accounts()
         self.access_token = self.accounts["ACCESS_TOKEN"]
         self.reddit = praw.Reddit(
-    client_id='A3Y57PNmwv6t1xp4-taihQ',
-    client_secret='GFOJDT1N_qcV30ADaywdWMUiqFq_KQ',
-    user_agent='Rocka-DEV'
+    client_id='<client_id>',
+    client_secret='<client_secret>',
+    user_agent='<reddit_username>'
 )
     def load_accounts(self):
         with open(".json", "r") as file:
